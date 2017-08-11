@@ -1,0 +1,83 @@
+<html>
+<head>
+    <title>GMAPS YO</title>
+    <script   src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBW-lYFqJZf7ZPYs8mQf-8QqbCs6mNw8pI&callback=makeMeggiesMap" async defer></script>
+    <style type="text/css">
+        #myMap {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Here I am</h1>
+    <div id="myMap"></div>
+    <form action="#">
+        <label>Where do you want to search?</label>
+        <input id="placeName" name="place_name">
+    </form>
+
+    <script>
+    var myMap;
+    function makeMeggiesMap(){
+        var container = document.getElementById('myMap');
+        var mapOptions = {
+            center: {lat:37, lng:-122},
+            // center: new google.maps.LatLng({})
+            zoom: 7,
+        };
+        myMap = new google.maps.Map(container, mapOptions);
+        myMap.addListener('click', function(evt) {
+          var aNewMarker = new google.maps.Marker({
+            map: myMap,
+            position: evt.latLng,
+            title: 'This Place'
+        });
+        });
+    }
+
+    function handleSearchResponse(resp){
+        if (resp.found === true){
+            addMapMarker(resp.data);
+        } else {
+            alert(resp.data);
+        }
+
+    }
+
+    function addMapMarker(placeData){
+        
+        var aNewMarker = new google.maps.Marker({
+            map: myMap,
+            position: placeData.location,
+            title: 'This Place'
+        });
+        
+        
+
+    }
+
+    
+
+    $('#placeName').on('blur', function(evt){
+        var whatTheUserTyped = $('#placeName').val();
+
+        // send the AJAX GET req
+        $.get('/search', 
+              {'place_id':whatTheUserTyped}, 
+              handleSearchResponse);
+
+        // $.get('/search', handleSearchResponse);
+
+        // when it returns from the server with that LATLNG
+        // for the restaurant
+        //       ---- > MAP IT !
+
+
+
+        
+    });
+        
+    </script>
+</body>
+</html>
